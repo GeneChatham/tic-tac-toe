@@ -1,15 +1,48 @@
 
 // Using NaN instead of null is a clever hack. See checkForWinner for details.
-var spaces = [
-  NaN, NaN, NaN,
-  NaN, NaN, NaN,
-  NaN, NaN, NaN
-];
+var spaces = [];
 
 var player1 = 'veggies';
 var player2 = 'junkfood';
 var currentPlayer = null;
 var gameWon = false;
+var player1tally = 0;
+var player2tally = 0;
+
+
+var resetSpaces = function() {
+    spaces = [
+      NaN, NaN, NaN,
+      NaN, NaN, NaN,
+      NaN, NaN, NaN
+    ];
+};
+
+var clearBoard = function() {
+
+    for(spaceNum = 0; spaceNum < spaces.length; spaceNum++) {
+        $('#board .space:eq(' + spaceNum + ')').removeClass(player1);
+        $('#board .space:eq(' + spaceNum + ')').removeClass(player2);
+    }
+};
+
+
+var startGame = function() {
+    resetSpaces();
+    gameWon = false;
+    clearBoard();
+    setNextTurn();
+    updateScores();
+};
+
+var updateScores = function() {
+    $('#player1name').text(player1 + ": ");
+    $('#player2name').text(player2 + ": ");
+    $('#player1tally').text(player1tally);
+    $('#player2tally').text(player2tally);
+};
+
+
 
 var setNextTurn = function () {
   if (currentPlayer === player1) {
@@ -20,6 +53,8 @@ var setNextTurn = function () {
   }
   $('#turn-label').text(currentPlayer);
 };
+
+
 
 var checkForWinner = function () {
   // Because (NaN === NaN) is always false, we can safely assume
@@ -40,8 +75,14 @@ var checkForWinner = function () {
   {
     gameWon = true;
     console.log('somebody won');
+    if(currentPlayer === player1) {
+        player1tally += 1;
+    }else {
+        player2tally += 1;
+    }
     // TODO: Trigger 'game-win' event with the winning player as the event data
     $(document).trigger('game-win', currentPlayer);
+    updateScores();
   }
 };
 
@@ -54,14 +95,11 @@ $(document).on('click', '#board .space', function (e) {
     alert("That space is already taken!  Please choose an empty space.");
   }else {
       // Marks the space with the current player's name
-  // TODO: Don't mark it unless the space is blank
-  spaces[spaceNum] = currentPlayer;
-  // Adds a class to elem so css can take care of the visuals
-  $('#board .space:eq(' + spaceNum + ')').addClass(currentPlayer);
-
-  checkForWinner();
-  setNextTurn();
-
+    spaces[spaceNum] = currentPlayer;
+    // Adds a class to elem so css can take care of the visuals
+    $('#board .space:eq(' + spaceNum + ')').addClass(currentPlayer);
+    checkForWinner();
+    setNextTurn();
   }
 
 });
@@ -71,5 +109,12 @@ $(document).on('game-win', function (e, winner) {
   alert(winner + " won this game!");
 });
 
+
+$('#newGame').on('click', function (e) {
+    console.log("New Game! clicked");
+    startGame();
+});
+
 // Start the game
-setNextTurn();
+startGame();
+
