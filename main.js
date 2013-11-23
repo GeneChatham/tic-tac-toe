@@ -2,15 +2,50 @@
 // Using NaN instead of null is a clever hack. See checkForWinner for details.
 var spaces = [];
 
+// keeps track of the players and their css images
 var player1 = 'veggies';
 var player2 = 'junkfood';
+
+// allows players to update their names without changing css links
 var player1string = 'veggies';
 var player2string = 'junkfood';
+
 var currentPlayer = null;
 var currentPlayerString = null;
 var gameWon = false;
 var player1tally = 0;
 var player2tally = 0;
+
+
+// Animates the winning squares when the game is won
+var animateBoard = function() {
+    if (spaces[0] === spaces[1] && spaces[1] === spaces[2]) {
+        animateSpaces(0,1,2);
+    }else if(spaces[3] === spaces[4] && spaces[4] === spaces[5]) {
+        animateSpaces(3,4,5);
+    }else if(spaces[6] === spaces[7] && spaces[7] === spaces[8]) {
+        animateSpaces(6,7,8);
+    }else if(spaces[0] === spaces[3] && spaces[3] === spaces[6]) {
+        animateSpaces(0,3,6);
+    }else if(spaces[1] === spaces[4] && spaces[4] === spaces[7]) {
+        animateSpaces(1,4,7);
+    }else if(spaces[2] === spaces[5] && spaces[5] === spaces[8]) {
+        animateSpaces(2,5,8);
+    }else if(spaces[0] === spaces[4] && spaces[4] === spaces[8]) {
+        animateSpaces(0,4,8);
+    }else if(spaces[2] === spaces[4] && spaces[4] === spaces[6]) {
+        animateSpaces(2,4,6);
+    }
+};
+
+var animateSpaces = function(space1, space2, space3) {
+    $('#board .space:eq(' + space1 + ')').fadeOut(400).fadeIn(400);
+    $('#board .space:eq(' + space2 + ')').delay(400).fadeOut(400).fadeIn(400);
+    $('#board .space:eq(' + space3 + ')').delay(800).fadeOut(400).fadeIn(400);
+};
+
+
+
 
 // Resets the spaces array for a new game.
 var resetSpaces = function() {
@@ -120,10 +155,15 @@ $(document).on('click', '#board .space', function (e) {
 
 });
 
+
 // When the game has been won, alert the winner.
 $(document).on('game-win', function (e, winner) {
-  // TODO: Alert who won the game
-  alert(winner + " won this game!");
+    alert(winner + " won this game!");
+    // var animateCounter = 0
+    // while(animateCounter < 3) {
+        animateBoard();
+        // animateCounter += 1;
+    // }
 });
 
 // Event handler for the "New Game!" button.
@@ -146,6 +186,9 @@ $('#names button').on('click', function (e) {
     }
     updateNames();
 });
+
+
+
 
 
 // Start the game
