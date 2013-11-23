@@ -4,12 +4,15 @@ var spaces = [];
 
 var player1 = 'veggies';
 var player2 = 'junkfood';
+var player1string = 'veggies';
+var player2string = 'junkfood';
 var currentPlayer = null;
+var currentPlayerString = null;
 var gameWon = false;
 var player1tally = 0;
 var player2tally = 0;
 
-
+// Resets the spaces array for a new game.
 var resetSpaces = function() {
     spaces = [
       NaN, NaN, NaN,
@@ -18,6 +21,7 @@ var resetSpaces = function() {
     ];
 };
 
+// Clears the images from the board.
 var clearBoard = function() {
 
     for(spaceNum = 0; spaceNum < spaces.length; spaceNum++) {
@@ -26,36 +30,46 @@ var clearBoard = function() {
     }
 };
 
-
+// Runs through the sequence of needed functions to set up for a new game.
 var startGame = function() {
     resetSpaces();
     gameWon = false;
     clearBoard();
     setNextTurn();
+    updateNames();
     updateScores();
 };
 
+// Updates the HTML to list the players names
+var updateNames = function() {
+    $('#player1name').text(player1string + ": ");
+    $('#player2name').text(player2string + ": ");
+};
+
+
+// Updates the HTML to list the players scores.
 var updateScores = function() {
-    $('#player1name').text(player1 + ": ");
-    $('#player2name').text(player2 + ": ");
     $('#player1tally').text(player1tally);
     $('#player2tally').text(player2tally);
 };
 
 
-
+// Decides which player is the current player.
 var setNextTurn = function () {
-  if (currentPlayer === player1) {
-    currentPlayer = player2;
-  }
-  else {
-    currentPlayer = player1;
-  }
-  $('#turn-label').text(currentPlayer);
+    if (currentPlayer === player1) {
+          currentPlayer = player2;
+          currentPlayerString = player2string
+        }
+        else {
+          currentPlayer = player1;
+          currentPlayerString = player1string
+        }
+    $('#turn-label').text(currentPlayerString);
 };
 
 
-
+// Examines the spaces array to check if three in a row has been acheived.
+// If there is a winner, end the game.
 var checkForWinner = function () {
   // Because (NaN === NaN) is always false, we can safely assume
   // that if three spaces in a row are the same, all three spaces are
@@ -81,11 +95,13 @@ var checkForWinner = function () {
         player2tally += 1;
     }
     // TODO: Trigger 'game-win' event with the winning player as the event data
-    $(document).trigger('game-win', currentPlayer);
+    $(document).trigger('game-win', currentPlayerString);
     updateScores();
+    setNextTurn();
   }
 };
 
+// Event handler for a player marking a space
 $(document).on('click', '#board .space', function (e) {
   var spaceNum = $(e.currentTarget).index();
   console.log('You clicked on space #' + spaceNum);
@@ -104,16 +120,33 @@ $(document).on('click', '#board .space', function (e) {
 
 });
 
+// When the game has been won, alert the winner.
 $(document).on('game-win', function (e, winner) {
   // TODO: Alert who won the game
   alert(winner + " won this game!");
 });
 
-
+// Event handler for the "New Game!" button.
 $('#newGame').on('click', function (e) {
     console.log("New Game! clicked");
     startGame();
 });
+
+// Event handler for the "Update Names" button.
+$('#names button').on('click', function (e) {
+    console.log("Update Names clicked");
+    if( $('#player1update').val() ){
+        player1string = $('#player1update').val();
+        $('#player1update').val(null);
+
+    }
+    if( $('#player2update').val() ){
+        player2string = $('#player2update').val();
+        $('#player2update').val(null);
+    }
+    updateNames();
+});
+
 
 // Start the game
 startGame();

@@ -28,3 +28,12 @@
 #board.space.cleared{
   background: #ccc;
 }
+
+#games {
+  float: left;
+}
+
+#names {
+  float: left;
+  margin-left: 80px;
+}
